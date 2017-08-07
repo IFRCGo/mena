@@ -71,18 +71,25 @@ function loadKeyFigures(url){
 function createAppealsTable(data){
     var html = "";
     data.forEach(function(d,i){
-        var url = 'http://ifrcgo.org/appeals/'+d['#meta+id'].toLowerCase()
-        html += '<tr><td><a href="'+url+'" target="_blank">'+d['#crisis+name']+'</a></td><td>'+d['#date+start']+'</td><td>'+d['#date+end']+'</td><td style="text-align:right">'+niceFormatNumber(d['#targeted'])+'</td><td style="text-align:right">'+niceFormatNumber(d['#meta+value'])+'</td><td style="text-align:right">'+niceFormatNumber(d['#meta+funding'])+'</td><td id="coverage'+i+'"></td><td><a href="'+url+'" target="_blank">'+d['#meta+id']+'</a></td></tr>';
-    });
-    $('#appealstable').append(html);
-    data.forEach(function(d,i){
-        createPie('#coverage'+i,60,10,d['#meta+coverage'].substring(0, d['#meta+coverage'].length - 1)/100);
+        var html = '';
+        if(d['#severity']=='Emergency'){
+            if(d['#meta+coverage']!=''){
+                var url = 'http://ifrcgo.org/appeals/'+d['#meta+id'].toLowerCase()
+                html += '<tr><td><a href="'+url+'" target="_blank">'+d['#crisis+name']+'</a></td><td>'+d['#date+start']+'</td><td>'+d['#date+end']+'</td><td style="text-align:right">'+niceFormatNumber(d['#targeted'])+'</td><td style="text-align:right">'+niceFormatNumber(d['#meta+value'])+'</td><td style="text-align:right">'+niceFormatNumber(d['#meta+funding'])+'</td><td id="coverage'+i+'"></td><td>'+d['#meta+id']+'</td></tr>';
+            } else {
+                html += '<tr><td>'+d['#crisis+name']+'</td><td>'+d['#date+start']+'</td><td>'+d['#date+end']+'</td><td style="text-align:right">'+niceFormatNumber(d['#targeted'])+'</td><td style="text-align:right">'+niceFormatNumber(d['#meta+value'])+'</td><td style="text-align:right">'+niceFormatNumber(d['#meta+funding'])+'</td><td id="coverage'+i+'"></td><td>'+d['#meta+id']+'</td></tr>';
+            }
+            $('#appealstable').append(html);
+            createPie('#coverage'+i,60,10,d['#meta+coverage'].substring(0, d['#meta+coverage'].length - 1)/100);
+        } else {
+            html += '<tr><td>'+d['#crisis+name']+'</td><td>'+d['#date+start']+'</td><td>'+d['#date+end']+'</td><td style="text-align:right">'+niceFormatNumber(d['#targeted'])+'</td><td style="text-align:right">'+niceFormatNumber(d['#meta+value'])+'</td><td>'+d['#meta+id']+'</td></tr>';
+            $('#drefstable').append(html);
+        }
     });
 }
 
 function createPie(id,width,inner,percent){
 
-    console.log(percent);
     var svg = d3.select(id).append("svg")
         .attr("width", width)
         .attr("height", width);
@@ -155,16 +162,3 @@ $.ajax({
 
 //example key figures running off a spreadsheet.
 loadKeyFigures('https://docs.google.com/spreadsheets/d/1kZ-ZdZ850S2Lap_jyXEEs9lNnRhGcH30yEFMB6RJ2t8/edit?usp=sharing');
-
-/*
-Here is a few suggestions:
-Maps of countries with open operations.
-Overview of:
-DREF and Emergency Appeals launched in the four countries - x
-Funding level - x
-Links to relevant appeal documents - x
-Global tools deployed
-Operational teams in place
-Public documents (joint statement, press release)
-Links to appeal plus pages for each operation - x
-*/
